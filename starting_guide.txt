@@ -1,0 +1,9 @@
+C:\Users\SUFIYAN\AppData\Local\Programs\Python\Python314\python.exe -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+
+python -m uvicorn app.main:app --reload --reload-dir app
+
+
+npm run dev -- -p 3000
+
+
+Remove-Item -Force -ErrorAction SilentlyContinue cdasb.db; Remove-Item -Recurse -Force -ErrorAction SilentlyContinue workspaces; Write-Host "DB and workspaces cleared"

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CDASB Blueprint Approval Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-background": "#191c1e",
+                        "tertiary-fixed-dim": "#c1c7cf",
+                        "on-tertiary-fixed": "#161c22",
+                        "on-tertiary-container": "#f3f8ff",
+                        "outline": "#727687",
+                        "secondary": "#575e71",
+                        "error-container": "#ffdad6",
+                        "surface": "#f7f9fb",
+                        "on-tertiary-fixed-variant": "#41474e",
+                        "surface-variant": "#e0e3e5",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed": "#001849",
+                        "primary": "#0050cb",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed": "#141b2c",
+                        "primary-fixed": "#dae1ff",
+                        "inverse-surface": "#2d3133",
+                        "primary-container": "#0066ff",
+                        "inverse-primary": "#b3c5ff",
+                        "background": "#f7f9fb",
+                        "on-surface": "#191c1e",
+                        "on-surface-variant": "#424656",
+                        "on-error": "#ffffff",
+                        "surface-container-high": "#e6e8ea",
+                        "tertiary": "#535a60",
+                        "on-tertiary": "#ffffff",
+                        "surface-container": "#eceef0",
+                        "secondary-fixed-dim": "#bfc6dc",
+                        "on-secondary-container": "#5d6477",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#6c7279",
+                        "surface-container-highest": "#e0e3e5",
+                        "surface-container-low": "#f2f4f6",
+                        "secondary-container": "#dbe2f9",
+                        "surface-tint": "#0054d6",
+                        "tertiary-fixed": "#dde3eb",
+                        "secondary-fixed": "#dbe2f9",
+                        "on-secondary-fixed-variant": "#3f4759",
+                        "primary-fixed-dim": "#b3c5ff",
+                        "on-primary-container": "#f8f7ff",
+                        "surface-dim": "#d8dadc",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#c2c6d8",
+                        "surface-bright": "#f7f9fb",
+                        "on-primary-fixed-variant": "#003fa4"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .shadow-ambient {
+            shadow: 0px 20px 40px rgba(0, 84, 214, 0.06);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-primary-fixed">
+<!-- TopNavBar -->
+<header class="bg-slate-50/70 dark:bg-slate-900/70 backdrop-blur-xl text-sans tracking-tight text-slate-900 dark:text-slate-100 w-full sticky top-0 z-50 tonal shift bg-slate-100 dark:bg-slate-800/50 shadow-[0_20_40px_rgba(0,84,214,0.06)]">
+<div class="flex justify-between items-center h-16 px-8 w-full">
+<div class="flex items-center gap-8">
+<span class="text-xl font-black tracking-tighter text-blue-700 dark:text-blue-400">CDASB Blueprint</span>
+<nav class="hidden md:flex gap-6 items-center">
+<a class="text-blue-700 dark:text-blue-400 font-bold border-b-2 border-blue-600 h-16 flex items-center" href="#">Dashboard</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 h-16 flex items-center transition-all duration-300" href="#">Analytics</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-blue-600 h-16 flex items-center transition-all duration-300" href="#">Team</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-slate-400">search</span>
+<input class="pl-10 pr-4 py-1.5 bg-surface-container-low border-none rounded-lg text-sm focus:ring-2 focus:ring-primary w-64 transition-all" placeholder="Search Blueprints..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-slate-500 hover:bg-white/50 p-2 rounded-full transition-all">notifications</button>
+<button class="material-symbols-outlined text-slate-500 hover:bg-white/50 p-2 rounded-full transition-all">settings</button>
+<img alt="User profile" class="w-8 h-8 rounded-full border border-outline-variant/30" data-alt="close-up portrait of a professional male architect in a clean white studio setting with soft directional lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMwHAGjMqew1WjZcsrFqPoVmLgGWL69qLvGojoEUm8eWUQNRy1wU7ccnsiVTY4DnrY2FdJ1mc76KJVWxzQ6hz6LyEBk2_cUhwlriWre-rujFvUqCorQSuT1rhSwMDmJfLG2wmwIpnqeHUXtSBuC4rSjey3ZaUWvux6kzBMF1gmZT8MhIQfxZlDH3EwpeMK6KDTlvfsGkEipMAT7w3Ax3ykxjJB0IJhUaBUCJGJcUQAx-R_5egfXpALReRkyrWJVLBWx8USZlGgvgw"/>
+</div>
+</div>
+</div>
+</header>
+<main class="flex min-h-[calc(100vh-64px)] pb-24">
+<!-- SideNavBar (Column 1) -->
+<aside class="h-screen w-64 fixed left-0 top-0 pt-20 bg-slate-100 dark:bg-slate-950 tonal background shift no borders flex flex-col h-full py-6 z-40">
+<div class="px-8 mb-8">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-sm">architecture</span>
+</div>
+<div>
+<h2 class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Blueprint Phases</h2>
+<p class="text-[10px] text-slate-400 font-medium">Management Console</p>
+</div>
+</div>
+<button class="w-full mt-6 py-2.5 bg-gradient-to-br from-primary to-primary-container text-white rounded-xl font-semibold text-sm shadow-lg shadow-blue-500/20 hover:scale-105 transition-all active:scale-95">
+                    New Blueprint
+                </button>
+</div>
+<nav class="flex-1">
+<div class="space-y-1">
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 pl-8 py-3 hover:text-blue-500 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px]">edit_note</span>
+<span class="uppercase tracking-widest text-[10px] font-bold">Draft</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 pl-8 py-3 hover:text-blue-500 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px]">rate_review</span>
+<span class="uppercase tracking-widest text-[10px] font-bold">Review</span>
+</a>
+<a class="flex items-center gap-3 text-blue-700 dark:text-blue-400 font-bold bg-white dark:bg-slate-900 rounded-l-full ml-4 pl-4 py-3 translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="uppercase tracking-widest text-[10px] font-bold">Approval</span>
+</a>
+<a class="flex items-center gap-3 text-slate-500 dark:text-slate-400 pl-8 py-3 hover:text-blue-500 transition-colors group" href="#">
+<span class="material-symbols-outlined text-[20px]">inventory_2</span>
+<span class="uppercase tracking-widest text-[10px] font-bold">Archive</span>
+</a>
+</div>
+</nav>
+<div class="px-8 pt-6 border-t border-slate-200/50">
+<a class="flex items-center gap-3 text-slate-400 py-2 hover:text-blue-500 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">help_outline</span>
+<span class="uppercase tracking-widest text-[9px] font-bold">Support</span>
+</a>
+<a class="flex items-center gap-3 text-slate-400 py-2 hover:text-blue-500 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">code</span>
+<span class="uppercase tracking-widest text-[9px] font-bold">API Docs</span>
+</a>
+</div>
+</aside>
+<!-- Main Content (Columns 2 & 3) -->
+<div class="ml-64 w-full p-8 flex gap-8 bg-surface">
+<!-- Column 2: Main Data Grid -->
+<div class="flex-[1.2] space-y-8">
+<section>
+<div class="flex justify-between items-end mb-6">
+<div>
+<span class="text-primary font-bold text-xs uppercase tracking-widest">Active File</span>
+<h1 class="text-3xl font-black text-on-surface tracking-tighter">BP-2024-SKYLINE</h1>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full text-[10px] font-bold uppercase tracking-wider">Priority: High</span>
+<span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold uppercase tracking-wider">Version 4.2</span>
+</div>
+</div>
+<!-- Bento Grid Info -->
+<div class="grid grid-cols-2 gap-4">
+<div class="col-span-2 bg-surface-container-lowest p-6 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.02)] border border-outline-variant/10">
+<h3 class="text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-4">Project Overview</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Structural blueprint for the Metropolitan Skyline Annex. Includes reinforced concrete core specifications, curtain wall architectural detailing, and HVAC integration systems for levels 40-55.</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 hover:shadow-lg transition-all duration-300">
+<span class="material-symbols-outlined text-primary mb-2">engineering</span>
+<h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Lead Engineer</h4>
+<p class="font-bold text-on-surface">Dr. Helena Vance</p>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 hover:shadow-lg transition-all duration-300">
+<span class="material-symbols-outlined text-primary mb-2">calendar_today</span>
+<h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Submission Date</h4>
+<p class="font-bold text-on-surface">Oct 12, 2024</p>
+</div>
+</div>
+</section>
+<section class="bg-surface-container-low p-1 rounded-2xl">
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden">
+<table class="w-full text-left text-sm">
+<thead class="bg-surface-container-high/50">
+<tr>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">Component</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">Status</th>
+<th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">Compliance</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-6 py-4 font-semibold">Foundation Load Analysis</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-green-500"></div>
+<span class="text-xs">Approved</span>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-mono">ISO-9001-A</td>
+</tr>
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-6 py-4 font-semibold">Elevator Core Layout</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-blue-500"></div>
+<span class="text-xs">Under Review</span>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-mono">BOCA-2023</td>
+</tr>
+<tr class="hover:bg-slate-50/50 transition-colors">
+<td class="px-6 py-4 font-semibold">Seismic Bracing</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-amber-400"></div>
+<span class="text-xs">Pending Action</span>
+</div>
+</td>
+<td class="px-6 py-4 text-xs font-mono">ASCE-7-22</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<!-- Column 3: Gantt Timeline -->
+<div class="flex-[0.8] space-y-6">
+<div class="bg-surface-container-lowest p-8 rounded-3xl border border-outline-variant/10 shadow-sm sticky top-24">
+<div class="flex items-center justify-between mb-8">
+<h3 class="text-xs font-bold text-on-surface uppercase tracking-widest">Approval Roadmap</h3>
+<span class="text-[10px] text-slate-400 font-medium">Q4 2024</span>
+</div>
+<div class="space-y-8 relative">
+<!-- Timeline Line -->
+<div class="absolute left-1 top-0 bottom-0 w-px bg-slate-100"></div>
+<!-- Task 1 -->
+<div class="relative pl-6">
+<div class="absolute left-[-3px] top-1.5 w-2 h-2 rounded-full bg-primary ring-4 ring-white"></div>
+<div class="flex justify-between items-start mb-2">
+<span class="text-[11px] font-bold uppercase tracking-tight text-on-surface">Structural Audit</span>
+<span class="text-[10px] text-slate-400 italic">Complete</span>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-full shadow-[0_2px_8px_rgba(0,80,203,0.3)]"></div>
+</div>
+</div>
+<!-- Task 2 -->
+<div class="relative pl-6">
+<div class="absolute left-[-3px] top-1.5 w-2 h-2 rounded-full bg-primary ring-4 ring-white"></div>
+<div class="flex justify-between items-start mb-2">
+<span class="text-[11px] font-bold uppercase tracking-tight text-on-surface">Code Compliance</span>
+<span class="text-[10px] text-blue-600 font-bold">In Progress</span>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[65%] shadow-[0_2px_8px_rgba(0,80,203,0.3)]"></div>
+</div>
+</div>
+<!-- Task 3 -->
+<div class="relative pl-6">
+<div class="absolute left-[-3px] top-1.5 w-2 h-2 rounded-full bg-slate-200 ring-4 ring-white"></div>
+<div class="flex justify-between items-start mb-2">
+<span class="text-[11px] font-bold uppercase tracking-tight text-slate-400">Final Sign-off</span>
+<span class="text-[10px] text-slate-400">Pending</span>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-slate-300 w-[10%]"></div>
+</div>
+</div>
+<!-- Visualization Image -->
+<div class="pt-6">
+<img class="w-full h-40 object-cover rounded-xl shadow-lg brightness-105" data-alt="ultra-modern minimalist architectural rendering of a skyscraper with complex geometric patterns in cool blue and silver tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmEr8hOb7nEIgjYazkZBPMpEGcENCqPQ4iID83oJYrbeseFvv2YM5I_ddH_eoHW6dVN3TWXqfaT3G-me__Nw5HuLS_YT4A2R2Nls9_wM6907Qkc7ca9bB26m-tHdzx3beWt2Ua_PQKR318hBze8SYovVm5HGj6q2FURJmddHlme2Y1Envr8FSP6Rr4ClR-rD8Afdk0wwvJIWJ4GxVwezfAKfOn0co-59HcrEQ64WAUIRuP4f0BEH-ZRinpRuaZmi_l1DcAhM6stSM"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="fixed bottom-0 left-64 right-0 z-50 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md shadow-[0_-10px_30px_rgba(0,0,0,0.03)] border-t border-white/20">
+<div class="flex justify-between items-center px-8 py-4">
+<div class="flex gap-6 items-center">
+<span class="text-xs font-medium text-slate-400">© 2024 CDASB Architectural Systems</span>
+<nav class="flex gap-4">
+<a class="text-xs font-medium text-slate-400 hover:text-slate-600 transition-colors" href="#">Privacy Policy</a>
+<a class="text-xs font-medium text-slate-400 hover:text-slate-600 transition-colors" href="#">Terms of Service</a>
+</nav>
+</div>
+<!-- Actions -->
+<div class="flex gap-4">
+<button class="px-8 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest border border-outline-variant/30 text-on-surface-variant hover:bg-surface-container-low transition-all duration-200">
+                    Revise
+                </button>
+<button class="px-10 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest bg-gradient-to-br from-primary to-primary-container text-white shadow-[0_10px_20px_rgba(0,80,203,0.25)] hover:scale-105 transition-all duration-300 active:scale-95 flex items-center gap-2">
+                    Proceed <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+</footer>
+</body></html>

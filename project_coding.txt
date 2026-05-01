@@ -1,0 +1,352 @@
+# SOFTWARE REQUIREMENTS SPECIFICATION (SRS)
+
+## Project Title
+
+**Conflict-Driven Autonomous System Builder (CDASB) – Interactive Version**
+
+---
+
+# 1. INTRODUCTION
+
+## 1.1 Purpose
+
+This system is designed to:
+
+* Accept prompts OR documents (.pdf / .docx)
+* Plan solutions using AI agents
+* Use structured conflict to refine decisions
+* Require user approval before execution
+* Iteratively build, test, and refine systems
+* Provide deployment or local execution options
+
+---
+
+# 2. UPDATED CORE WORKFLOW (KEY CHANGE)
+
+## 2.1 End-to-End Flow
+
+```text
+User Input (Prompt / PDF / DOCX)
+        ↓
+Planning Phase (Agents)
+        ↓
+Conflict Phase (Debate on Plan)
+        ↓
+Final Plan + Implementation Strategy
+        ↓
+User Approval (Proceed Button)
+        ↓
+Execution Begins
+        ↓
+Conflict → Coding → Conflict → Testing → Conflict
+        ↓
+Completion Notification
+        ↓
+User Choice:
+   [Deploy] or [Run Locally]
+        ↓
+Final Testing → Conflict → Output Delivery
+```
+
+---
+
+# 3. INPUT LAYER (ENHANCED)
+
+## 3.1 Supported Inputs
+
+* Natural language prompts
+* PDF documents
+* DOCX files
+
+## 3.2 Processing
+
+* Extract text from documents
+* Convert into structured goals
+* Feed into planning agents
+
+---
+
+# 4. PHASE 1: PLANNING SYSTEM
+
+## 4.1 Objective
+
+Before any coding:
+
+* Fully understand the problem
+* Design architecture
+* Define execution strategy
+
+---
+
+## 4.2 Planning Agents
+
+### 🧠 Planner Agent
+
+* Breaks input into tasks
+* Designs system architecture
+
+### 🔍 Analyst Agent
+
+* Extracts requirements from documents
+* Identifies hidden constraints
+
+---
+
+# 5. PHASE 2: CONFLICT ON PLANNING
+
+## 5.1 Conflict Loop (Planning Stage)
+
+```text
+Planner proposes system
+↓
+Critic challenges flaws
+↓
+Optimizer improves plan
+↓
+Judge selects best version
+↓
+Repeat until stable
+```
+
+---
+
+## 5.2 Output of This Phase
+
+* Final architecture
+* Tech stack
+* Execution roadmap
+
+---
+
+# 6. USER APPROVAL GATE
+
+## 6.1 Output to User
+
+System presents:
+
+* Architecture
+* Features
+* Implementation plan
+
+## 6.2 User Options
+
+* ✅ Proceed
+* ❌ Revise
+
+👉 **Execution only starts after approval**
+
+---
+
+# 7. PHASE 3: EXECUTION ENGINE (ITERATIVE)
+
+## 7.1 Execution Pipeline
+
+### Step 1: Coding Phase
+
+* Builder Agent generates code
+
+### Step 2: Conflict Phase
+
+* Critic reviews code
+* Optimizer improves efficiency
+* Judge validates
+
+---
+
+### Step 3: Testing Phase
+
+* Generate test cases
+* Run tests
+
+---
+
+### Step 4: Conflict Again
+
+* Analyze failures
+* Improve system
+
+---
+
+## 7.2 Loop Structure
+
+```text
+Code → Conflict → Improve → Test → Conflict → Improve
+```
+
+👉 Continues until system is stable
+
+---
+
+# 8. COMPLETION HANDLER
+
+## 8.1 When System is Ready
+
+* Notify user:
+
+  > “System build completed”
+
+---
+
+## 8.2 User Options
+
+### Option 1: Deploy
+
+* Cloud deployment (Vercel / AWS / Railway)
+
+### Option 2: Run Locally
+
+* Provide localhost setup
+* Docker container or script
+
+---
+
+# 9. FINAL VALIDATION LOOP
+
+After deployment/local run:
+
+```text
+Run System →
+Test →
+Conflict →
+Refine →
+Final Output
+```
+
+---
+
+# 10. FINAL OUTPUT
+
+User receives:
+
+* Working application
+* Source code
+* Deployment link OR localhost access
+* Documentation
+
+---
+
+# 11. ARCHITECTURE OVERVIEW
+
+## Core Modules
+
+### 1. Input Processor
+
+* Handles prompt / PDF / DOCX
+
+### 2. Planning Engine
+
+* Multi-agent architecture design
+
+### 3. Conflict Engine (Universal)
+
+* Used in EVERY stage:
+
+  * Planning
+  * Coding
+  * Testing
+
+### 4. Execution Engine
+
+* Code generation + execution
+
+### 5. Testing Engine
+
+* Automated validation
+
+### 6. Deployment Engine
+
+* Cloud / local execution
+
+### 7. User Interaction Layer
+
+* Approval system
+* Notifications
+* Deployment choice
+
+---
+
+# 12. KEY DESIGN PRINCIPLE
+
+👉 Conflict is NOT a phase
+👉 Conflict is **embedded everywhere**
+
+| Stage      | Conflict Used? |
+| ---------- | -------------- |
+| Planning   | ✅              |
+| Coding     | ✅              |
+| Testing    | ✅              |
+| Deployment | ✅              |
+
+---
+
+# 13. TECHNOLOGY STACK
+
+## AI Models (via NVIDIA API)
+
+* Reasoning → DeepSeek-class
+* Coding → Qwen-class
+* Critique → Mistral-class
+
+---
+
+## Backend
+
+* Python (FastAPI)
+
+## Frontend
+
+* React / Next.js
+
+## Execution
+
+* Docker sandbox
+
+## Database
+
+* PostgreSQL + Vector DB
+
+---
+
+# 14. ADVANCED BEHAVIOR
+
+## 14.1 Continuous Conflict Injection
+
+* Every output is challenged
+* No single-agent decisions allowed
+
+---
+
+## 14.2 Human-in-the-Loop Control
+
+* User approves before execution
+* User controls deployment
+
+---
+
+## 14.3 Self-Improvement
+
+* Stores past failures
+* Learns better strategies over time
+
+---
+
+# 15. CONCLUSION
+
+This system evolves from:
+
+* Static AI tools
+  → Interactive, autonomous builders
+
+With:
+
+* Structured planning
+* Continuous conflict
+* Controlled execution
+* User-guided deployment
+
+👉 Result:
+A system that **thinks, debates, builds, tests, and delivers — with you in control**
+
+---
+
+**End of Updated SRS**

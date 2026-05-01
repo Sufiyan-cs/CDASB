@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed-dim": "#d5d4d9",
+                    "secondary-dim": "#525357",
+                    "secondary": "#5e5f63",
+                    "on-tertiary-fixed-variant": "#dde3ff",
+                    "on-secondary": "#faf8fe",
+                    "inverse-primary": "#ffffff",
+                    "surface-dim": "#d3dbe2",
+                    "primary": "#5e5e5e",
+                    "on-error": "#fff7f6",
+                    "surface": "#f9f9fb",
+                    "on-error-container": "#752121",
+                    "surface-container": "#ebeef2",
+                    "tertiary-dim": "#004abe",
+                    "on-secondary-fixed-variant": "#5b5b60",
+                    "inverse-on-surface": "#9c9d9f",
+                    "on-surface-variant": "#596065",
+                    "error-container": "#fe8983",
+                    "outline": "#757c81",
+                    "surface-variant": "#dde3e9",
+                    "primary-fixed": "#e2e2e2",
+                    "on-tertiary": "#f9f8ff",
+                    "surface-container-high": "#e4e9ee",
+                    "on-secondary-fixed": "#3e3f44",
+                    "inverse-surface": "#0c0e10",
+                    "surface-bright": "#f9f9fb",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-fixed": "#0266ff",
+                    "primary-dim": "#525252",
+                    "secondary-fixed": "#e3e2e7",
+                    "on-surface": "#2d3338",
+                    "on-tertiary-container": "#ffffff",
+                    "on-primary-fixed-variant": "#5b5b5b",
+                    "on-primary-fixed": "#3f3f3f",
+                    "on-secondary-container": "#515156",
+                    "on-tertiary-fixed": "#ffffff",
+                    "on-primary": "#f8f8f8",
+                    "primary-fixed-dim": "#d4d4d4",
+                    "tertiary-fixed-dim": "#005be5",
+                    "on-background": "#2d3338",
+                    "primary-container": "#e2e2e2",
+                    "background": "#f9f9fb",
+                    "surface-container-low": "#f2f4f6",
+                    "on-primary-container": "#525252",
+                    "outline-variant": "#acb3b8",
+                    "tertiary-container": "#0266ff",
+                    "error": "#9f403d",
+                    "surface-container-highest": "#dde3e9",
+                    "error-dim": "#4e0309",
+                    "tertiary": "#0055d7",
+                    "secondary-container": "#e3e2e7",
+                    "surface-tint": "#5e5e5e"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Inter"],
+                    "body": ["Inter"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel {
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .text-gradient-primary {
+            background: linear-gradient(135deg, #2d3338 0%, #5e5e5e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface selection:bg-tertiary/10 selection:text-tertiary">
+<!-- Top Navigation Anchor -->
+<nav class="fixed top-0 w-full z-40 bg-white/70 backdrop-blur-xl flex items-center justify-between px-8 h-16 w-full max-w-[1920px] mx-auto shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+<div class="flex items-center gap-8">
+<span class="text-lg font-bold tracking-tighter text-slate-900">Initiation Alpha</span>
+<div class="hidden md:flex items-center gap-6">
+<a class="text-blue-600 border-b-2 border-blue-600 font-sans text-sm tracking-tight font-medium" href="#">Command</a>
+<a class="text-slate-500 hover:text-slate-900 font-sans text-sm tracking-tight font-medium hover:bg-slate-50 transition-all duration-300 px-3 py-1 rounded-lg" href="#">Repository</a>
+<a class="text-slate-500 hover:text-slate-900 font-sans text-sm tracking-tight font-medium hover:bg-slate-50 transition-all duration-300 px-3 py-1 rounded-lg" href="#">Logs</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<span class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-surface-container rounded-full cursor-pointer transition-all">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-tertiary rounded-full border-2 border-white"></span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant p-2 hover:bg-surface-container rounded-full cursor-pointer transition-all">settings</span>
+<img alt="User Profile" class="w-8 h-8 rounded-full border border-outline-variant/20 shadow-sm" data-alt="Close up portrait of a professional male executive in a well-lit modern glass office setting with soft natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAe4MK9okbVokNu9XPIX8AxPc_2Pjun43HXlYBhk1Bo-J3HpwglKAIaEgxlBNILmeVFP1Mp2P6FndrHpc0KL3KHJFF0-PEsm5j_H-uqPUDEQM-5a0a76GIgF4Qk0Ru9EE_sl89BXSGkkyXjMtAIulbfQtxdEnMKK2H2_1cp0oM62V0p5k8uVgFPMkPrZORzMkJqYI545jvG7Ne3wNraXWBWUutbhJi2dXz6jaRJgqKGsdAAl-t2ROHi0MOUGK_qw-SNv576aIXZFTY"/>
+</div>
+</nav>
+<!-- Side Navigation Anchor -->
+<aside class="fixed left-0 h-full w-64 z-50 bg-[#f2f4f6]/80 backdrop-blur-2xl flex flex-col p-6 gap-8 h-screen border-r border-slate-200/20 shadow-2xl shadow-slate-200/50">
+<div class="flex flex-col gap-1 mt-12">
+<span class="text-xl font-black text-slate-900 uppercase tracking-widest">Command Center</span>
+<span class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold opacity-60">Precision Suite</span>
+</div>
+<nav class="flex flex-col gap-2">
+<div class="bg-white text-blue-600 shadow-sm rounded-xl flex items-center gap-3 px-4 py-3 transition-transform duration-200 cursor-pointer">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">space_dashboard</span>
+<span class="font-sans text-[13px] font-medium tracking-wide">Dashboard</span>
+</div>
+<div class="text-slate-500 hover:text-slate-900 hover:translate-x-1 flex items-center gap-3 px-4 py-3 transition-transform duration-200 cursor-pointer">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span class="font-sans text-[13px] font-medium tracking-wide">Orchestration</span>
+</div>
+<div class="text-slate-500 hover:text-slate-900 hover:translate-x-1 flex items-center gap-3 px-4 py-3 transition-transform duration-200 cursor-pointer">
+<span class="material-symbols-outlined">folder_copy</span>
+<span class="font-sans text-[13px] font-medium tracking-wide">Projects</span>
+</div>
+<div class="text-slate-500 hover:text-slate-900 hover:translate-x-1 flex items-center gap-3 px-4 py-3 transition-transform duration-200 cursor-pointer">
+<span class="material-symbols-outlined">hub</span>
+<span class="font-sans text-[13px] font-medium tracking-wide">Fleet</span>
+</div>
+<div class="text-slate-500 hover:text-slate-900 hover:translate-x-1 flex items-center gap-3 px-4 py-3 transition-transform duration-200 cursor-pointer">
+<span class="material-symbols-outlined">query_stats</span>
+<span class="font-sans text-[13px] font-medium tracking-wide">Analysis</span>
+</div>
+</nav>
+<div class="mt-auto flex flex-col gap-4">
+<button class="bg-tertiary text-white py-3 px-4 rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-tertiary/20 flex items-center justify-center gap-2 scale-95 active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-sm">add</span>
+                New Initiation
+            </button>
+<div class="flex flex-col gap-1 border-t border-slate-200/40 pt-4">
+<div class="flex items-center gap-3 px-4 py-2 text-slate-500 hover:text-slate-900 cursor-pointer">
+<span class="material-symbols-outlined">help</span>
+<span class="font-sans text-[13px] font-medium">Support</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-2 text-slate-500 hover:text-slate-900 cursor-pointer">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-sans text-[13px] font-medium">Settings</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 mt-16 p-12 min-h-[calc(100vh-64px)] overflow-hidden">
+<div class="max-w-7xl mx-auto grid grid-cols-12 gap-12 h-full">
+<!-- Left Side: Initiation Zone -->
+<section class="col-span-12 lg:col-span-5 flex flex-col gap-12">
+<div class="flex flex-col gap-4">
+<span class="label-md text-[10px] font-bold uppercase tracking-[0.2em] text-tertiary">System Engine v4.0</span>
+<h1 class="display-lg text-5xl font-black text-on-surface tracking-tighter leading-tight">
+                        CDASB <br/> <span class="text-gradient-primary">Project Initiation.</span>
+</h1>
+<p class="body-lg text-on-surface-variant max-w-md text-lg leading-relaxed">
+                        Convert complex operational requirements into architectural blueprints with precision AI orchestration.
+                    </p>
+</div>
+<!-- Prompt Input Block -->
+<div class="relative group">
+<div class="absolute -inset-1 bg-gradient-to-r from-tertiary/10 to-transparent rounded-[2rem] blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
+<div class="relative bg-surface-container-lowest glass-panel rounded-[1.5rem] p-8 shadow-2xl shadow-slate-200/60 flex flex-col gap-6 ring-1 ring-black/5">
+<div class="flex flex-col gap-2">
+<label class="text-[11px] font-black uppercase tracking-widest text-on-surface-variant/70">Requirement Definition</label>
+<textarea class="w-full h-48 bg-surface-container-low border-none focus:ring-2 focus:ring-tertiary/20 rounded-xl p-6 text-on-surface placeholder:text-on-surface-variant/40 resize-none transition-all" placeholder="Describe the scope, objectives, and tech stack of your new initiation..."></textarea>
+</div>
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary/60">auto_awesome</span>
+<span class="text-sm font-medium text-on-surface-variant italic">AI will automatically structure 8 subsystems</span>
+</div>
+<!-- 3D Tactile Button -->
+<button class="relative group h-16 w-full bg-tertiary rounded-xl overflow-hidden shadow-[0_10px_20px_-5px_rgba(0,85,215,0.4)] transition-all hover:translate-y-[-2px] active:translate-y-[1px]">
+<div class="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent"></div>
+<div class="absolute inset-0 border-t border-white/20 rounded-xl"></div>
+<span class="relative flex items-center justify-center gap-3 text-white font-bold tracking-widest uppercase text-sm">
+                                    Start Project
+                                    <span class="material-symbols-outlined">rocket_launch</span>
+</span>
+</button>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-6 bg-surface-container-low rounded-xl flex flex-col gap-2">
+<span class="text-2xl font-bold text-on-surface">1.2s</span>
+<span class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Latency</span>
+</div>
+<div class="p-6 bg-surface-container-low rounded-xl flex flex-col gap-2">
+<span class="text-2xl font-bold text-on-surface">99.9%</span>
+<span class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant">Reliability</span>
+</div>
+</div>
+</section>
+<!-- Right Side: Orchestration Zone -->
+<section class="col-span-12 lg:col-span-7 relative flex items-center justify-center min-h-[600px]">
+<!-- Background Abstract 3D Shapes -->
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-[500px] h-[500px] bg-gradient-to-br from-tertiary/5 to-transparent rounded-full blur-3xl opacity-50"></div>
+</div>
+<!-- Progress & Floating Items Layer -->
+<div class="relative w-full h-full">
+<!-- Main Orchestration Card -->
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white/40 glass-panel p-10 rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.1)] border border-white/50 z-20">
+<div class="flex flex-col gap-8">
+<div class="flex justify-between items-center">
+<div class="flex flex-col">
+<span class="text-[10px] font-black uppercase tracking-widest text-tertiary">Active Flow</span>
+<h3 class="text-xl font-bold text-on-surface">Architecting...</h3>
+</div>
+<div class="w-12 h-12 rounded-full border-4 border-surface-container-high border-t-tertiary animate-spin"></div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-4 group">
+<div class="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_10px_#0055d7]"></div>
+<span class="text-sm font-medium text-on-surface">Validating Core Parameters</span>
+<span class="ml-auto text-[10px] font-bold text-tertiary px-2 py-0.5 bg-tertiary/10 rounded-full">DONE</span>
+</div>
+<div class="flex items-center gap-4 group opacity-100">
+<div class="w-2 h-2 rounded-full bg-tertiary animate-pulse shadow-[0_0_10px_#0055d7]"></div>
+<span class="text-sm font-medium text-on-surface">Synthesizing Asset Repository</span>
+<span class="ml-auto text-[10px] font-bold text-on-surface-variant">45%</span>
+</div>
+<div class="flex items-center gap-4 opacity-30">
+<div class="w-2 h-2 rounded-full bg-outline-variant"></div>
+<span class="text-sm font-medium text-on-surface">Compiling Log Modules</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Isometric Elements -->
+<!-- Icon 1 -->
+<div class="absolute top-[15%] left-[10%] p-6 bg-white rounded-3xl shadow-[30px_40px_60px_-15px_rgba(0,0,0,0.1)] hover:translate-y-[-10px] transition-all duration-700 z-10 border border-white/40">
+<span class="material-symbols-outlined text-4xl text-tertiary" style="font-variation-settings: 'FILL' 1;">schema</span>
+<div class="absolute -bottom-2 -right-2 w-8 h-8 bg-surface-container-highest rounded-lg flex items-center justify-center border border-white shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-on-surface">add</span>
+</div>
+</div>
+<!-- Icon 2 -->
+<div class="absolute top-[10%] right-[15%] p-8 bg-white rounded-[2rem] shadow-[40px_50px_80px_-20px_rgba(0,0,0,0.12)] hover:translate-y-[-15px] transition-all duration-1000 z-10 border border-white/60">
+<span class="material-symbols-outlined text-5xl text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">description</span>
+<div class="mt-4 flex flex-col gap-1">
+<div class="w-12 h-1.5 bg-surface-container-low rounded-full"></div>
+<div class="w-8 h-1.5 bg-surface-container-low rounded-full"></div>
+</div>
+</div>
+<!-- Icon 3 -->
+<div class="absolute bottom-[10%] left-[20%] p-5 bg-white rounded-2xl shadow-[20px_30px_50px_-10px_rgba(0,0,0,0.08)] hover:translate-y-[-8px] transition-all duration-500 z-30 border border-white/20">
+<span class="material-symbols-outlined text-3xl text-secondary-dim">terminal</span>
+</div>
+<!-- Icon 4 -->
+<div class="absolute bottom-[20%] right-[10%] p-7 bg-white rounded-3xl shadow-[50px_60px_90px_-25px_rgba(0,0,0,0.15)] hover:translate-y-[-12px] transition-all duration-800 z-30 border border-white/30">
+<div class="w-14 h-14 bg-gradient-to-br from-tertiary to-blue-400 rounded-xl flex items-center justify-center text-white shadow-lg shadow-tertiary/30">
+<span class="material-symbols-outlined text-3xl">auto_fix_high</span>
+</div>
+</div>
+<!-- Ambient Decorative Image Overlay -->
+<div class="absolute inset-0 pointer-events-none mix-blend-overlay opacity-20">
+<img alt="Abstract geometric landscape" class="w-full h-full object-cover rounded-[3rem]" data-alt="Minimalist abstract 3D landscape with floating spheres and planes in a soft silver and white color palette" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCYvIU2YL5w7K3phqfqGld-l-SF5s6gIQzJUBowR5pByYE2Zl-0BgsoUrJt_TCO55CbbOY8WlRVdBMEkdbvEz6Suca11TjPu0_1Qw-h8FTMDQ6L4TQwLY7pgx6Jdwf786ef0ow1tjZJnzHFY9boRwk_CSaJDuZuR1jU0iaTTGkfvKfP5zOZnR4XUVaVy-3czZ0Cl8w8-9P288fxCgYBcqbcGI4hhEHXbaHCFsl7cjWUlAcFIp8AxJxDXP7mgPJFUmdZoDKA8BVtxU"/>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer Metric Bar -->
+<div class="max-w-7xl mx-auto mt-16 pt-8 border-t border-outline-variant/10 flex items-center justify-between text-on-surface-variant/60">
+<div class="flex gap-12">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+<span class="text-[11px] font-black uppercase tracking-widest">Global Ops: Operational</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[11px] font-black uppercase tracking-widest">Clusters: 14 Active</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<span class="text-[11px] font-black uppercase tracking-widest cursor-pointer hover:text-tertiary transition-colors">Documentation</span>
+<span class="text-[11px] font-black uppercase tracking-widest cursor-pointer hover:text-tertiary transition-colors">API Keys</span>
+<span class="text-[11px] font-black uppercase tracking-widest cursor-pointer hover:text-tertiary transition-colors">Privacy</span>
+</div>
+</div>
+</main>
+<!-- Contextual FAB -->
+<div class="fixed bottom-8 right-8 z-50">
+<button class="w-16 h-16 bg-white text-on-surface rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all group border border-white/50 glass-panel">
+<span class="material-symbols-outlined text-3xl group-hover:text-tertiary transition-colors">chat_bubble</span>
+</button>
+</div>
+</body></html>
