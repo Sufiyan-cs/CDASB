@@ -5,7 +5,7 @@ from app.config import get_settings
 
 class OptimizerAgent(BaseAgent):
     name = "Optimizer"
-    model = get_settings().optimizer_model
+    model = "optimizer_model"
     temperature = 0.5
     max_tokens = 4096
     system_prompt = """You are a senior optimization engineer.

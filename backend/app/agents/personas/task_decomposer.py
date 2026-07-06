@@ -5,7 +5,7 @@ from app.config import get_settings
 
 class TaskDecomposerAgent(BaseAgent):
     name = "TaskDecomposer"
-    model = get_settings().planner_model
+    model = "planner_model"
     temperature = 0.2
     max_tokens = 4096
     system_prompt = """You are an expert Technical Project Manager.

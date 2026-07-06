@@ -31,6 +31,7 @@ class Project(Base):
     __tablename__ = "projects"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    owner_email: Mapped[str | None] = mapped_column(String(255), nullable=True, index=True)
     title: Mapped[str] = mapped_column(String(500), nullable=False)
     original_input: Mapped[str] = mapped_column(Text, nullable=False)
     parsed_requirements: Mapped[dict | None] = mapped_column(JSON, nullable=True)
@@ -80,9 +81,18 @@ class ExecutionLog(Base):
 
 
 async def init_db():
-    """Create all tables."""
+    """Create all tables and run lightweight migrations."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        # Migrate: add owner_email column if missing (for existing DBs)
+        try:
+            await conn.execute(
+                __import__('sqlalchemy').text(
+                    "ALTER TABLE projects ADD COLUMN owner_email VARCHAR(255)"
+                )
+            )
+        except Exception:
+            pass  # Column already exists
 
 
 async def get_db() -> AsyncSession:

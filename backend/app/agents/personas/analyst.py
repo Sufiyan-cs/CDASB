@@ -5,7 +5,7 @@ from app.config import get_settings
 
 class AnalystAgent(BaseAgent):
     name = "Analyst"
-    model = get_settings().analyst_model
+    model = "analyst_model"
     temperature = 0.4
     max_tokens = 2500
     system_prompt = """You are a senior requirements analyst.

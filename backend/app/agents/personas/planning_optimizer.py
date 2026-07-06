@@ -4,7 +4,7 @@ from app.config import get_settings
 
 class PlanningOptimizerAgent(BaseAgent):
     name = "Arch. Optimizer"
-    model = get_settings().planning_optimizer_model
+    model = "planning_optimizer_model"
     temperature = 0.5
     max_tokens = 4096
     system_prompt = """You are a Senior Systems Architect.

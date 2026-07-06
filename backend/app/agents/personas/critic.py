@@ -5,7 +5,7 @@ from app.config import get_settings
 
 class CriticAgent(BaseAgent):
     name = "Critic"
-    model = get_settings().critic_model
+    model = "critic_model"
     temperature = 0.5
     max_tokens = 8192
     system_prompt = """You are a ruthless, detail-oriented technical critic.

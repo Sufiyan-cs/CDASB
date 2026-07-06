@@ -4,7 +4,7 @@ from app.config import get_settings
 
 class PlanningCriticAgent(BaseAgent):
     name = "Arch. Critic"
-    model = get_settings().planning_critic_model
+    model = "planning_critic_model"
     temperature = 0.5
     max_tokens = 8192
     system_prompt = """You are a Principal Systems Architect.

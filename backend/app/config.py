@@ -5,22 +5,23 @@ import os
 
 
 class Settings(BaseSettings):
-    # NVIDIA / OpenAI-compatible API
+    # NVIDIA / OpenAI-compatible API/m
     nvidia_api_key: str = ""
     nvidia_base_url: str = "https://integrate.api.nvidia.com/v1"
 
     # Models - NVIDIA hosted (most powerful available)
-    gatekeeper_model: str = "meta/llama-3.1-70b-instruct"
+    gatekeeper_model: str = "meta/llama-3.3-70b-instruct"
     planner_model: str = "openai/gpt-oss-120b"
-    coder_model: str = "deepseek-ai/deepseek-v4-flash"
-    critic_model: str = "moonshotai/kimi-k2-thinking"
+    coder_model: str = "minimaxai/minimax-m2.7"
+    critic_model: str = "z-ai/glm-5.1"
     judge_model: str = "meta/llama-3.3-70b-instruct"
     analyst_model: str = "mistralai/mistral-large-3-675b-instruct-2512"
     optimizer_model: str = "z-ai/glm-5.1"
     simple_planner_model: str = "meta/llama-3.3-70b-instruct"
+    documenter_model: str = "minimaxai/minimax-m2.7"
     
     # Models - Planning Phase Overrides
-    planning_critic_model: str = "moonshotai/kimi-k2-thinking"
+    planning_critic_model: str = "z-ai/glm-5.1"
     planning_optimizer_model: str = "openai/gpt-oss-120b"
     planning_judge_model: str = "meta/llama-3.3-70b-instruct"
 

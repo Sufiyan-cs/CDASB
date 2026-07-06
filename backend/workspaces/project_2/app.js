@@ -1,141 +1,172 @@
-/**
- * App Module
- * Handles DOM interaction, rendering, and event listeners.
- */
+// State
+let todos = [];
+let theme = 'dark';
 
 // DOM Elements
-const rodElements = [
-    document.getElementById('rod-1'),
-    document.getElementById('rod-2'),
-    document.getElementById('rod-3')
-];
-const resetButton = document.getElementById('reset-button');
+const todoForm = document.getElementById('todo-form');
+const todoInput = document.getElementById('todo-input');
+const todoList = document.getElementById('todo-list');
+const themeToggle = document.getElementById('theme-toggle');
+const emptyState = document.getElementById('empty-state');
+const completedCountEl = document.getElementById('completed-count');
+const totalCountEl = document.getElementById('total-count');
+const progressBar = document.getElementById('progress-bar');
+const sunIcon = document.getElementById('sun-icon');
+const moonIcon = document.getElementById('moon-icon');
 
-// Game State
-let selectedRodIndex = null;
-let isGameWon = false;
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    loadTheme();
+    render();
+});
 
-// Disk Colors based on size (Index 0 is unused, 1-5 map to sizes)
-// Blueprint colors: #ccc, #aaa, #888, #666, #444
-// Mapping: Size 5 (largest) -> #444, Size 1 (smallest) -> #ccc
-const getDiskColor = (size) => {
-    const colors = {
-        5: '#444',
-        4: '#666',
-        3: '#888',
-        2: '#aaa',
-        1: '#ccc'
+// Theme Management
+function loadTheme() {
+    const savedTheme = localStorage.getItem('todo-theme');
+    if (savedTheme) {
+        theme = savedTheme;
+    } else {
+        theme = 'dark';
+    }
+    applyTheme();
+}
+
+function applyTheme() {
+    const body = document.body;
+    if (theme === 'light') {
+        body.classList.add('light-mode');
+        sunIcon.classList.remove('hidden');
+        moonIcon.classList.add('hidden');
+    } else {
+        body.classList.remove('light-mode');
+        sunIcon.classList.add('hidden');
+        moonIcon.classList.remove('hidden');
+    }
+}
+
+function toggleTheme() {
+    theme = theme === 'light' ? 'dark' : 'light';
+    localStorage.setItem('todo-theme', theme);
+    applyTheme();
+}
+
+// Todo Management
+function addTodo(text) {
+    const todo = {
+        id: Date.now(),
+        text: text,
+        completed: false,
+        createdAt: new Date()
     };
-    return colors[size] || '#999';
-};
-
-// Initialize Game
-function initGame() {
-    isGameWon = false;
-    selectedRodIndex = null;
-    Hanoi.init();
+    todos.push(todo);
     render();
 }
 
-// Render the current state to the DOM
-function render() {
-    const state = Hanoi.getState();
-    
-    // Clear all rods visually first
-    rodElements.forEach(rod => {
-        // Remove existing disks, keep the rod structure
-        const existingDisks = rod.querySelectorAll('.disk');
-        existingDisks.forEach(d => d.remove());
-        rod.classList.remove('selected');
-    });
-
-    // Render disks for each rod
-    state.rods.forEach((rodData, index) => {
-        const rodElement = rodElements[index];
-        
-        // Highlight selected rod
-        if (selectedRodIndex === index) {
-            rodElement.classList.add('selected');
-        }
-
-        rodData.forEach(diskSize => {
-            const diskElement = document.createElement('div');
-            diskElement.classList.add('disk');
-            
-            // Styling based on size
-            // Width percentage: larger size = larger width
-            // Base width 30%, max 90%
-            const widthPercent = 30 + (diskSize * 12); 
-            diskElement.style.width = `${widthPercent}%`;
-            diskElement.style.backgroundColor = getDiskColor(diskSize);
-            
-            // Add click event to disk (delegates to rod click logic mostly, but specific for selection)
-            diskElement.addEventListener('click', (e) => {
-                e.stopPropagation(); // Prevent bubbling to rod if not needed, though we handle logic in rod click usually
-                handleRodClick(index);
-            });
-
-            rodElement.appendChild(diskElement);
-        });
-    });
+function toggleTodo(id) {
+    const todo = todos.find(t => t.id === id);
+    if (todo) {
+        todo.completed = !todo.completed;
+        render();
+    }
 }
 
-// Handle Rod Interaction
-function handleRodClick(rodIndex) {
-    if (isGameWon) return;
-
-    // Case 1: No rod selected yet -> Select source
-    if (selectedRodIndex === null) {
-        // If clicking an empty rod, do nothing
-        const state = Hanoi.getState();
-        if (state.rods[rodIndex].length === 0) return;
-        
-        selectedRodIndex = rodIndex;
-        render();
-    } 
-    // Case 2: Rod already selected
-    else {
-        // If clicking the same rod, deselect
-        if (selectedRodIndex === rodIndex) {
-            selectedRodIndex = null;
+function deleteTodo(id) {
+    const todoElement = document.querySelector(`[data-id="${id}"]`);
+    if (todoElement) {
+        todoElement.classList.add('removing');
+        setTimeout(() => {
+            todos = todos.filter(t => t.id !== id);
             render();
-            return;
-        }
+        }, 300);
+    }
+}
 
-        // Attempt to move
-        const result = Hanoi.moveDisk(selectedRodIndex, rodIndex);
+// Render
+function render() {
+    // Clear list
+    todoList.innerHTML = '';
+    
+    // Show/hide empty state
+    if (todos.length === 0) {
+        emptyState.style.display = 'block';
+    } else {
+        emptyState.style.display = 'none';
+    }
+    
+    // Render todos
+    todos.forEach(todo => {
+        const li = document.createElement('li');
+        li.className = 'todo-item group flex items-center gap-4 p-4 hover:bg-white/5 transition-colors duration-200';
+        li.setAttribute('data-id', todo.id);
         
-        if (result.success) {
-            selectedRodIndex = null;
-            render();
-            
-            if (Hanoi.checkWin()) {
-                isGameWon = true;
-                setTimeout(() => {
-                    alert("Congratulations! You solved the Tower of Hanoi!");
-                    initGame();
-                }, 100);
-            }
-        } else {
-            // Invalid move feedback (shake animation or console log)
-            console.log(result.message);
-            // Deselect on invalid move to reset state cleanly or keep selected? 
-            // Usually keeping selected allows user to try another rod.
-            // Let's keep it selected but maybe flash red in a more complex app.
-        }
+        // Checkbox
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'checkbox-custom shrink-0';
+        checkbox.checked = todo.completed;
+        checkbox.addEventListener('change', () => toggleTodo(todo.id));
+        
+        // Text
+        const textSpan = document.createElement('span');
+        textSpan.className = `flex-1 text-sm transition-all duration-200 ${
+            todo.completed 
+                ? 'text-slate-500 line-through' 
+                : 'text-white'
+        }`;
+        textSpan.textContent = todo.text;
+        
+        // Delete button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-btn p-2 rounded-lg hover:bg-red-500/10 text-slate-500 hover:text-red-400 transition-all duration-200 shrink-0';
+        deleteBtn.innerHTML = `
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+        `;
+        deleteBtn.addEventListener('click', () => deleteTodo(todo.id));
+        
+        li.appendChild(checkbox);
+        li.appendChild(textSpan);
+        li.appendChild(deleteBtn);
+        todoList.appendChild(li);
+    });
+    
+    // Update stats
+    updateStats();
+}
+
+function updateStats() {
+    const total = todos.length;
+    const completed = todos.filter(t => t.completed).length;
+    const percentage = total > 0 ? (completed / total) * 100 : 0;
+    
+    completedCountEl.textContent = completed;
+    totalCountEl.textContent = total;
+    progressBar.style.width = `${percentage}%`;
+}
+
+// Event Handlers
+function handleSubmit(e) {
+    e.preventDefault();
+    const text = todoInput.value.trim();
+    if (text) {
+        addTodo(text);
+        todoInput.value = '';
+        todoInput.focus();
     }
 }
 
 // Event Listeners
-rodElements.forEach((rod, index) => {
-    rod.addEventListener('click', () => {
-        handleRodClick(index);
-    });
+todoForm.addEventListener('submit', handleSubmit);
+themeToggle.addEventListener('click', toggleTheme);
+
+// Keyboard shortcut - Ctrl/Cmd + Enter to focus input
+document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+        e.preventDefault();
+        todoInput.focus();
+    }
 });
 
-resetButton.addEventListener('click', () => {
-    initGame();
-});
-
-// Start the game
-initGame();
+// Initial render
+render();

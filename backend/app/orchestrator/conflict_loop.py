@@ -41,6 +41,7 @@ class EventType(str, Enum):
     ROUND_COMPLETE = "round_complete"
     CONFLICT_RESOLVED = "conflict_resolved"
     CONFLICT_FAILED = "conflict_failed"
+    TOKEN_STREAM = "token_stream"
 
 
 @dataclass
@@ -102,6 +103,16 @@ class ConflictLoop:
         )
         await self.on_event(event)
 
+    def _make_token_cb(self, round_num: int):
+        """Create a token streaming callback for an agent call."""
+        async def _cb(payload: dict):
+            await self._emit(
+                EventType.TOKEN_STREAM, round_num,
+                agent=payload.get("agent", ""),
+                data=payload,
+            )
+        return _cb
+
     async def run(self, generator_agent, prompt: str, context: str = "") -> dict:
         """
         Execute the full conflict loop.
@@ -118,7 +129,7 @@ class ConflictLoop:
 
         # Step 1: Generator produces initial output
         await self._emit(EventType.GENERATOR_START, 1, agent=generator_agent.name)
-        current_output = await generator_agent.run(prompt, context)
+        current_output = await generator_agent.run_stream(prompt, context, on_token=self._make_token_cb(1))
         await self._emit(
             EventType.GENERATOR_DONE, 1,
             agent=generator_agent.name,
@@ -135,7 +146,7 @@ class ConflictLoop:
                 f"Review the following {self.phase} output and provide your critique.\n\n"
                 f"--- OUTPUT TO REVIEW ---\n{current_output}\n--- END ---"
             )
-            critic_response = await self.critic.run(critic_prompt)
+            critic_response = await self.critic.run_stream(critic_prompt, on_token=self._make_token_cb(round_num))
             await self._emit(
                 EventType.CRITIC_DONE, round_num,
                 agent="Critic",
@@ -163,15 +174,16 @@ class ConflictLoop:
 
             # --- Optimizer ---
             await self._emit(EventType.OPTIMIZER_START, round_num, agent="Optimizer")
-            # Truncate inputs to prevent timeout on large planning outputs
-            truncated_output = current_output[:3000] + ("\n...[truncated]" if len(current_output) > 3000 else "")
-            truncated_critic = critic_response[:2000] + ("\n...[truncated]" if len(critic_response) > 2000 else "")
+            # Truncate inputs to prevent timeout on large outputs, but keep it huge for planning
+            max_out_len = 20000 if self.phase == "planning" else 5000
+            truncated_output = current_output[:max_out_len] + ("\n...[truncated]" if len(current_output) > max_out_len else "")
+            truncated_critic = critic_response[:3000] + ("\n...[truncated]" if len(critic_response) > 3000 else "")
             optimizer_prompt = (
                 f"Improve the following {self.phase} output based on the critic's feedback. Be concise and direct.\n\n"
                 f"--- ORIGINAL OUTPUT ---\n{truncated_output}\n--- END ---\n\n"
                 f"--- CRITIC FEEDBACK ---\n{truncated_critic}\n--- END ---"
             )
-            optimizer_response = await self.optimizer.run(optimizer_prompt)
+            optimizer_response = await self.optimizer.run_stream(optimizer_prompt, on_token=self._make_token_cb(round_num))
             await self._emit(
                 EventType.OPTIMIZER_DONE, round_num,
                 agent="Optimizer",
@@ -179,8 +191,12 @@ class ConflictLoop:
             )
             round_record["optimizer"] = optimizer_response
 
-            # Apply SEARCH/REPLACE diffs if the optimizer used that format
-            improved = self._apply_diffs(current_output, optimizer_response)
+            if self.phase == "planning":
+                # Planning Optimizer rewrites the FULL markdown document directly
+                improved = optimizer_response
+            else:
+                # Apply SEARCH/REPLACE diffs if the optimizer used that format for code
+                improved = self._apply_diffs(current_output, optimizer_response)
 
             # --- Judge ---
             await self._emit(EventType.JUDGE_START, round_num, agent="Judge")
@@ -192,7 +208,7 @@ class ConflictLoop:
                 f"--- CRITIC ISSUES ---\n{judge_critic}\n--- END ---\n\n"
                 f"--- IMPROVED VERSION (preview) ---\n{judge_improved_preview}\n--- END ---"
             )
-            judge_response = await self.judge.run(judge_prompt)
+            judge_response = await self.judge.run_stream(judge_prompt, on_token=self._make_token_cb(round_num))
             await self._emit(
                 EventType.JUDGE_DONE, round_num,
                 agent="Judge",
@@ -257,7 +273,7 @@ class ConflictLoop:
                 f"Focus on strict syntax, correctness, and clean logic.\n\n"
                 f"--- {file_path} CONTENT ---\n{current_content}\n--- END ---"
             )
-            critic_response = await self.critic.run(critic_prompt)
+            critic_response = await self.critic.run_stream(critic_prompt, on_token=self._make_token_cb(round_num))
             await self._emit(
                 EventType.CRITIC_DONE, round_num,
                 agent="Critic",
@@ -282,7 +298,7 @@ class ConflictLoop:
                 f"--- ORIGINAL {file_path} ---\n{current_content}\n--- END ---\n\n"
                 f"--- CRITIC FEEDBACK ---\n{truncated_critic}\n--- END ---"
             )
-            optimizer_response = await self.optimizer.run(optimizer_prompt)
+            optimizer_response = await self.optimizer.run_stream(optimizer_prompt, on_token=self._make_token_cb(round_num))
             
             # Apply SEARCH/REPLACE diffs from optimizer
             improved = self._apply_diffs(current_content, optimizer_response)
@@ -303,7 +319,7 @@ class ConflictLoop:
                 f"--- CRITIC ISSUES ---\n{judge_critic}\n--- END ---\n\n"
                 f"--- IMPROVED VERSION (preview) ---\n{judge_improved_preview}\n--- END ---"
             )
-            judge_response = await self.judge.run(judge_prompt)
+            judge_response = await self.judge.run_stream(judge_prompt, on_token=self._make_token_cb(round_num))
             await self._emit(
                 EventType.JUDGE_DONE, round_num,
                 agent="Judge",

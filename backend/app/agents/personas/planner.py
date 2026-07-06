@@ -5,7 +5,7 @@ from app.config import get_settings
 
 class PlannerAgent(BaseAgent):
     name = "Planner"
-    model = get_settings().planner_model
+    model = "planner_model"
     temperature = 0.7
     max_tokens = 4096
     system_prompt = """You are an elite system architect and planner.

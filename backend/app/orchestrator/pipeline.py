@@ -45,6 +45,14 @@ class PipelineOrchestrator:
             **event.to_dict(),
         })
 
+    async def _token_emitter(self, payload: dict):
+        """Relay live token streaming events to the WebSocket."""
+        await self.on_event({
+            "type": "token_stream",
+            "project_id": self.project_id,
+            **payload,
+        })
+
     # ──────────────────────────── PHASE 1: PLANNING ────────────────────────────
 
     async def run_planning(self, user_input: str) -> dict:
@@ -56,25 +64,57 @@ class PipelineOrchestrator:
 
         # Gatekeeper Triage
         has_document = "--- DOCUMENT CONTENT ---" in user_input
+        project_name = None
         if has_document:
             complexity = "COMPLEX"
             domain = "FULLSTACK"
             await self._emit("agent_action", {"agent": "Gatekeeper", "action": "Document detected. Bypassing triage -> COMPLEX"})
         else:
             await self._emit("agent_action", {"agent": "Gatekeeper", "action": "Analyzing complexity..."})
-            triage_result = await self.gatekeeper.run_json(user_input)
+            triage_result = await self.gatekeeper.run_json(user_input, on_token=self._token_emitter)
             complexity = triage_result.get("complexity", "COMPLEX").upper()
             domain = triage_result.get("domain", "FULLSTACK").upper()
+            project_name = triage_result.get("project_name", "").strip()
             await self._emit("agent_action", {"agent": "Gatekeeper", "action": f"Triage complete: {complexity} {domain}"})
 
+        # Update project title with gatekeeper's chosen name
+        if project_name:
+            async with async_session() as session:
+                project = await session.get(Project, self.project_id)
+                if project:
+                    project.title = project_name
+                    await session.commit()
+            await self._emit("project_named", {"name": project_name})
+
         if complexity == "SIMPLE":
-            # Pseudo-plan bypassing Analyst & Planner
+            # Run SimplePlanner to generate an actual blueprint for user review
+            from app.agents.personas.simple_planner import SimplePlannerAgent
+
+            await self._emit("agent_action", {"agent": "SimplePlanner", "action": "Drafting blueprint..."})
+            await self._conflict_event_handler(ConflictEvent(EventType.GENERATOR_START, phase="simple-planning", round_number=1, agent="SimplePlanner"))
+
+            simple_planner = SimplePlannerAgent()
+            if domain == "WEB":
+                planner_detail = "Include DOM structure, CSS specifications, and JavaScript logic."
+            else:
+                planner_detail = "Include program structure, compilation/build instructions, and core logic. Use the language the user requested."
+
+            blueprint = await simple_planner.run_stream(
+                f"Create a blueprint for: {user_input}\nDomain: {domain}\nThis is a SIMPLE project — generate a clear, complete blueprint with exact file list and integration map.\n{planner_detail}",
+                on_token=self._token_emitter,
+            )
+
+            await self._conflict_event_handler(ConflictEvent(EventType.GENERATOR_DONE, phase="simple-planning", round_number=1, agent="SimplePlanner", data={"output_preview": blueprint[:500]}))
+            await self._emit("agent_action", {"agent": "SimplePlanner", "action": "Blueprint complete"})
+
             rapid_plan = {
-                "final_output": json.dumps({"description": "Simple rapid task", "domain": domain, "complexity": "SIMPLE", "raw_prompt": user_input[:500]}),
+                "final_output": blueprint,
                 "rounds": 0,
                 "approved": True,
                 "complexity": "SIMPLE",
-                "domain": domain
+                "domain": domain,
+                "raw_prompt": user_input[:500],
+                "blueprint": blueprint,
             }
             # Save to database
             async with async_session() as session:
@@ -84,9 +124,9 @@ class PipelineOrchestrator:
                     project.final_plan = rapid_plan
                     project.status = ProjectStatus.AWAITING_APPROVAL
                     await session.commit()
-            
+
             await self._emit("planning_complete", {
-                "plan": "Rapid Plan Generated for Simple Task.",
+                "plan": blueprint[:2000],
                 "rounds": 0,
                 "approved_by_agents": True,
             })
@@ -94,8 +134,9 @@ class PipelineOrchestrator:
 
         # Step 1: Analyst extracts requirements
         await self._emit("agent_action", {"agent": "Analyst", "action": "Extracting requirements..."})
-        requirements = await self.analyst.run(
-            f"Extract structured requirements from the following input:\n\n{user_input}"
+        requirements = await self.analyst.run_stream(
+            f"Extract structured requirements from the following input:\n\n{user_input}",
+            on_token=self._token_emitter,
         )
         await self._emit("agent_action", {"agent": "Analyst", "action": "Requirements extracted", "preview": requirements[:300]})
 
@@ -123,8 +164,8 @@ class PipelineOrchestrator:
         async with async_session() as session:
             project = await session.get(Project, self.project_id)
             if project:
-                project.parsed_requirements = self._safe_parse(requirements)
-                project.final_plan = self._safe_parse(plan_result["final_output"])
+                project.parsed_requirements = {"raw_text": requirements}
+                project.final_plan = plan_result
                 project.status = ProjectStatus.AWAITING_APPROVAL
                 await session.commit()
 
@@ -145,42 +186,60 @@ class PipelineOrchestrator:
         """
         Fast execution path for SIMPLE projects.
         
-        Flow: Simple Planner (blueprint) → Builder (all files, one shot) → Write → Integration check
+        Flow: Builder (all files, one shot) → Write → Integration check
+        Blueprint is already generated during planning phase.
         
         No decomposer, no conflict loop, no chunk iteration.
-        Typically completes in 2 API calls (~20-30 seconds total).
+        Typically completes in 1 API call (~15-20 seconds).
         """
-        from app.agents.personas.simple_planner import SimplePlannerAgent
-
         domain = plan_dict.get("domain", "WEB")
         raw_prompt = plan_dict.get("raw_prompt", plan)
         workspace_path = str(executor.project_dir)
 
-        # ── Step 1: Simple Planner drafts a blueprint ──
-        await self._emit("execution_update", {"message": "Simple Planner drafting blueprint..."})
-        await self._conflict_event_handler(ConflictEvent(EventType.GENERATOR_START, phase="simple-planning", round_number=1, agent="SimplePlanner"))
+        # ── Step 1: Use existing blueprint from planning phase, or generate if missing ──
+        blueprint = plan_dict.get("blueprint", "")
 
-        simple_planner = SimplePlannerAgent()
-        blueprint = await simple_planner.run(
-            f"Create a blueprint for: {raw_prompt}\nDomain: {domain}\nThis is a SIMPLE project — generate a clear, complete blueprint with exact file list, integration map, DOM structure, and core logic."
-        )
+        if not blueprint:
+            # Fallback: blueprint wasn't generated during planning (e.g. legacy project)
+            from app.agents.personas.simple_planner import SimplePlannerAgent
 
-        await self._conflict_event_handler(ConflictEvent(EventType.GENERATOR_DONE, phase="simple-planning", round_number=1, agent="SimplePlanner", data={"output_preview": blueprint[:500]}))
+            await self._emit("execution_update", {"message": "Simple Planner drafting blueprint..."})
+            await self._conflict_event_handler(ConflictEvent(EventType.GENERATOR_START, phase="simple-planning", round_number=1, agent="SimplePlanner"))
+
+            simple_planner = SimplePlannerAgent()
+            if domain == "WEB":
+                planner_detail = "Include DOM structure, CSS specifications, and JavaScript logic."
+            else:
+                planner_detail = "Include program structure, compilation/build instructions, and core logic. Use the language the user requested."
+            blueprint = await simple_planner.run_stream(
+                f"Create a blueprint for: {raw_prompt}\nDomain: {domain}\nThis is a SIMPLE project — generate a clear, complete blueprint with exact file list and integration map.\n{planner_detail}",
+                on_token=self._token_emitter,
+            )
+
+            await self._conflict_event_handler(ConflictEvent(EventType.GENERATOR_DONE, phase="simple-planning", round_number=1, agent="SimplePlanner", data={"output_preview": blueprint[:500]}))
+        else:
+            await self._emit("execution_update", {"message": "Using blueprint from planning phase."})
+
         await self._emit("execution_update", {"message": "Blueprint ready. Building all files..."})
 
         # ── Step 2: Builder generates ALL files in one shot ──
         await self._conflict_event_handler(ConflictEvent(EventType.GENERATOR_START, phase="simple-building", round_number=1, agent="Builder"))
+
+        if domain == "WEB":
+            coherence_note = "All files must be coherent — HTML must link CSS/JS, JS must target DOM IDs from the HTML."
+        else:
+            coherence_note = "All files must be coherent — headers/imports must be correct, modules must connect properly, and the build/run process must work. Use the EXACT language specified in the blueprint."
 
         build_prompt = (
             f"Generate the COMPLETE project based on this blueprint.\n\n"
             f"--- BLUEPRINT ---\n{blueprint}\n--- END BLUEPRINT ---\n\n"
             f"--- ORIGINAL REQUEST ---\n{raw_prompt}\n--- END ---\n\n"
             f"IMPORTANT: Generate ALL files listed in the blueprint in a SINGLE response.\n"
-            f"All files must be coherent — HTML must link CSS/JS, JS must target DOM IDs from the HTML.\n"
+            f"{coherence_note}\n"
             f"This is a {domain} project. Make it polished and complete."
         )
 
-        build_result_text = await self.builder.run(build_prompt)
+        build_result_text = await self.builder.run_stream(build_prompt, on_token=self._token_emitter)
         await self._conflict_event_handler(ConflictEvent(EventType.GENERATOR_DONE, phase="simple-building", round_number=1, agent="Builder", data={"output_preview": build_result_text[:500]}))
 
         # Parse all files from the Builder's response
@@ -352,11 +411,12 @@ class PipelineOrchestrator:
             await self._emit("execution_update", {"message": "Loaded cached decomposition from previous session..."})
             chunks = cached_chunks
         else:
-            await self._emit("execution_update", {"message": "Decomposing plan into iterative chunks..."})
+            await self._emit("agent_action", {"agent": "Decomposer", "action": "Decomposing plan into iterative chunks..."})
             from app.agents.personas.task_decomposer import TaskDecomposerAgent
             decomposer = TaskDecomposerAgent()
-            decomp_result = await decomposer.run_json(plan)
+            decomp_result = await decomposer.run_json(plan, on_token=self._token_emitter)
             chunks = decomp_result.get("chunks", [])
+            await self._emit("agent_action", {"agent": "Decomposer", "action": f"Decomposition complete: {len(chunks)} chunks generated"})
 
             if not chunks:
                 chunks = [{"type": "feature", "name": "Monolithic Fallback", "description": "Generate everything"}]
@@ -444,7 +504,7 @@ class PipelineOrchestrator:
                 # Fresh chunk — call Builder
                 await self._emit("execution_update", {"message": f"Drafting {chunk_name} ({i+1}/{len(chunks)})..."})
                 await self._conflict_event_handler(ConflictEvent(EventType.GENERATOR_START, phase=f"drafting-{chunk_name}", round_number=1, agent="Builder"))
-                build_result_text = await self.builder.run(build_prompt)
+                build_result_text = await self.builder.run_stream(build_prompt, on_token=self._token_emitter)
                 await self._conflict_event_handler(ConflictEvent(EventType.GENERATOR_DONE, phase=f"drafting-{chunk_name}", round_number=1, agent="Builder", data={"output_preview": build_result_text[:500]}))
                 
                 # Parse drafted files from this chunk
@@ -666,6 +726,13 @@ class PipelineOrchestrator:
                 # Replace literal control chars that aren't properly escaped
                 fixed = s.replace('\r\n', '\\n').replace('\r', '\\n')
                 return json.loads(fixed)
+            except json.JSONDecodeError:
+                pass
+            # Attempt 2.5: Fix stray backslashes (e.g. `\ ` or `\;` that aren't valid JSON escapes)
+            try:
+                # Replace \X where X is not a valid JSON escape char (", \, /, b, f, n, r, t, u)
+                fixed_bs = re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', s)
+                return json.loads(fixed_bs)
             except json.JSONDecodeError:
                 pass
             # Attempt 3: Use a character-walk to re-escape broken strings

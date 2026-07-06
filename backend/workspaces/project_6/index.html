@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N-Queens Problem</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="ambient-glow"></div>
+    <div class="ambient-glow-2"></div>
+    
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <svg class="crown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h1>N-Queens</h1>
+            </div>
+            <p class="tagline">Classic backtracking algorithm visualized</p>
+        </div>
+    </header>
+    
+    <main>
+        <section class="controls-card">
+            <div class="input-group">
+                <label for="n">Board Size (N)</label>
+                <div class="input-wrapper">
+                    <input type="number" id="n" min="4" max="12" value="8" aria-label="Board size">
+                </div>
+            </div>
+            <button id="solve-btn">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 11l3 3L22 4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Solve</span>
+            </button>
+        </section>
+        
+        <section class="board-section">
+            <div class="board-header">
+                <h2>Chess Board</h2>
+                <div class="board-meta">
+                    <span class="meta-item">
+                        <span class="meta-dot light"></span>
+                        Light
+                    </span>
+                    <span class="meta-item">
+                        <span class="meta-dot dark"></span>
+                        Dark
+                    </span>
+                    <span class="meta-item">
+                        <span class="meta-dot queen"></span>
+                        Queen
+                    </span>
+                </div>
+            </div>
+            <div class="board-wrapper">
+                <div class="board-container" id="board">
+                    <!-- JS generates children here -->
+                </div>
+                <div class="board-overlay" id="board-overlay">
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <p class="empty-title">Ready to Solve</p>
+                        <p class="empty-desc">Enter a board size and click Solve to visualize the N-Queens solution</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="info-section">
+            <div class="info-card">
+                <div class="info-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M12 16v-4M12 8h.01M22 12c0 5.523-4.477 10-10 10S2 17.477 2 12 6.477 2 12 2s10 4.477 10 10z" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div class="info-content">
+                    <h3>About the Problem</h3>
+                    <p>The N-Queens puzzle is the problem of placing N chess queens on an N×N chessboard so that no two queens threaten each other. Thus, a solution requires that no two queens share the same row, column, or diagonal.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p>Generated with backtracking algorithm</p>
+    </footer>
+    
+    <script src="script.js" type="module"></script>
+  <script src="nqueens.js"></script>
+</body>
+</html>

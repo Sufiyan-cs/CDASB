@@ -5,7 +5,7 @@ from app.config import get_settings
 
 class JudgeAgent(BaseAgent):
     name = "Judge"
-    model = get_settings().judge_model
+    model = "judge_model"
     temperature = 0.3
     max_tokens = 800
     system_prompt = """You are the final arbiter in a multi-agent conflict resolution system.

@@ -3,24 +3,282 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tower of Hanoi</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <title>Todo List</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh;
+        }
+        
+        body.light-mode {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+        }
+        
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        
+        body.light-mode .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        
+        .todo-input-glow:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3), 0 0 20px rgba(59, 130, 246, 0.1);
+        }
+        
+        .todo-item {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+        }
+        
+        .todo-item.removing {
+            animation: fadeOut 0.3s ease-in forwards;
+        }
+        
+        .checkbox-custom {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #64748b;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .checkbox-custom:checked {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-color: transparent;
+        }
+        
+        .checkbox-custom:checked::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 1px;
+            width: 6px;
+            height: 11px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .theme-toggle-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .theme-toggle-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+        
+        .theme-toggle-btn:hover::before {
+            width: 200%;
+            height: 200%;
+        }
+        
+        .delete-btn {
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.2s ease;
+        }
+        
+        .todo-item:hover .delete-btn {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .empty-state {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+        
+        .stats-number {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .add-btn {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            transition: all 0.3s ease;
+        }
+        
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+        }
+        
+        .add-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(100, 116, 139, 0.3);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(100, 116, 139, 0.5);
+        }
+    </style>
 </head>
-<body>
-    <div class="game-container">
-        <div class="rod" id="rod-1">
-            <!-- JS generates children here -->
-        </div>
-        <div class="rod" id="rod-2">
-            <!-- JS generates children here -->
-        </div>
-        <div class="rod" id="rod-3">
-            <!-- JS generates children here -->
-        </div>
-        <button id="reset-button">Reset</button>
+<body class="transition-all duration-500">
+    <!-- Background decorative elements -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl"></div>
     </div>
-    <script src="hanoi.js"></script>
+    
+    <div class="relative z-10 min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="py-6 px-4">
+            <div class="max-w-lg mx-auto flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-violet-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <h1 class="text-2xl font-bold text-white dark-text-white light-text-gray-900 tracking-tight">Todo List</h1>
+                </div>
+                <button id="theme-toggle" class="theme-toggle-btn relative p-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all duration-300" aria-label="Toggle theme">
+                    <svg id="sun-icon" class="w-5 h-5 text-amber-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    <svg id="moon-icon" class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="flex-1 px-4 pb-8">
+            <div class="max-w-lg mx-auto space-y-6">
+                <!-- Stats Card -->
+                <div class="glass-card rounded-2xl p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <p class="text-sm text-slate-400 font-medium">Your Progress</p>
+                            <p class="text-2xl font-bold text-white mt-1"><span id="completed-count" class="stats-number">0</span><span class="text-slate-500 text-lg">/<span id="total-count">0</span></span></p>
+                        </div>
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500/20 to-violet-500/20 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="w-full h-2 bg-slate-700/50 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="progress-bar h-full rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <!-- Input Form -->
+                <form id="todo-form" class="glass-card rounded-2xl p-2 flex gap-2">
+                    <div class="flex-1 relative">
+                        <input 
+                            id="todo-input" 
+                            type="text" 
+                            placeholder="What needs to be done?" 
+                            class="w-full py-3.5 px-4 bg-transparent text-white placeholder-slate-500 text-sm rounded-xl border border-transparent focus:border-blue-500/50 todo-input-glow outline-none transition-all duration-300"
+                            autocomplete="off"
+                        >
+                    </div>
+                    <button 
+                        id="todo-submit" 
+                        type="submit" 
+                        class="add-btn px-6 py-3.5 rounded-xl text-white font-semibold text-sm flex items-center gap-2 shrink-0"
+                    >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Add
+                    </button>
+                </form>
+                
+                <!-- Todo List -->
+                <div class="glass-card rounded-2xl overflow-hidden">
+                    <ul id="todo-list" class="divide-y divide-white/5">
+                        <!-- JS generates children here -->
+                    </ul>
+                    
+                    <!-- Empty State -->
+                    <div id="empty-state" class="empty-state py-16 px-4 text-center">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-500/10 to-violet-500/10 flex items-center justify-center">
+                            <svg class="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                            </svg>
+                        </div>
+                        <p class="text-slate-400 font-medium">No tasks yet</p>
+                        <p class="text-slate-500 text-sm mt-1">Add your first task to get started</p>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <p class="text-center text-slate-500 text-xs">Press Enter to add a task</p>
+            </div>
+        </main>
+    </div>
+    
     <script src="app.js"></script>
 </body>
 </html>

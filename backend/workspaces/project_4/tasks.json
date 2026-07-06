@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1704067200000,
+    "title": "Design system architecture",
+    "priority": "high",
+    "column": "to-do"
+  },
+  {
+    "id": 1704153600000,
+    "title": "Implement glassmorphism UI",
+    "priority": "medium",
+    "column": "in-progress"
+  },
+  {
+    "id": 1704240000000,
+    "title": "Deploy to production",
+    "priority": "low",
+    "column": "done"
+  }
+]

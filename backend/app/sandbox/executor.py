@@ -58,6 +58,15 @@ class NativeExecutor:
         for file_info in files:
             rel_path = file_info["path"]
             content = file_info["content"]
+
+            # Normalize literal escape sequences that survived JSON parsing.
+            # LLMs sometimes double-escape newlines (\\n) which json.loads()
+            # only partially unescapes, leaving literal \n text in the string.
+            if isinstance(content, str) and "\n" not in content and "\\n" in content:
+                content = content.replace("\\n", "\n")
+                content = content.replace("\\t", "\t")
+                content = content.replace("\\r", "")
+
             full_path = self.project_dir / rel_path
             full_path.parent.mkdir(parents=True, exist_ok=True)
             full_path.write_text(content, encoding="utf-8")

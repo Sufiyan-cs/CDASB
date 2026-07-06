@@ -4,7 +4,7 @@ from app.config import get_settings
 
 class PlanningJudgeAgent(BaseAgent):
     name = "Arch. Judge"
-    model = get_settings().planning_judge_model
+    model = "planning_judge_model"
     temperature = 0.3
     max_tokens = 800
     system_prompt = """You are the Lead Systems Architect making final approvals.
